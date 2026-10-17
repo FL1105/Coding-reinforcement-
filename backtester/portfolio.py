@@ -1,10 +1,13 @@
-from backtester.validation import require_finite_positive
+from backtester.validation import (
+    require_finite_non_negative,
+    require_finite_positive,
+)
 
 
 class Portfolio:
     def __init__(self, cash: float, shares: float = 0.0) -> None:
-        self.cash = require_finite_positive("cash", cash)
-        self.shares = shares
+        self.cash = require_finite_non_negative("cash", cash)
+        self.shares = require_finite_non_negative("shares", shares)
 
     def buy(self, price: float, cash_amount: float) -> None:
         price = require_finite_positive("price", price)

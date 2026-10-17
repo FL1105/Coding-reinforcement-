@@ -29,11 +29,25 @@ def test_sell_converts_shares_into_cash():
 
 
 def test_sell_can_close_the_whole_position():
-    portfolio = Portfolio(cash=1.0, shares=10.0)
+    portfolio = Portfolio(cash=0.0, shares=10.0)
     portfolio.sell(price=6.0, shares=10.0)
     assert portfolio.shares == pytest.approx(0.0)
-    assert portfolio.cash == pytest.approx(61.0)
-    assert portfolio.equity(6.0) == pytest.approx(61.0)
+    assert portfolio.cash == pytest.approx(60.0)
+    assert portfolio.equity(6.0) == pytest.approx(60.0)
+
+
+@pytest.mark.parametrize("cash", [float("nan"), float("inf"), float("-inf"), -1.0])
+def test_portfolio_rejects_non_finite_or_negative_cash(cash):
+    with pytest.raises(ValueError, match="cash must be non-negative"):
+        Portfolio(cash=cash, shares=10.0)
+
+
+@pytest.mark.parametrize(
+    "shares", [float("nan"), float("inf"), float("-inf"), -1.0]
+)
+def test_portfolio_rejects_non_finite_or_negative_shares(shares):
+    with pytest.raises(ValueError, match="shares must be non-negative"):
+        Portfolio(cash=1.0, shares=shares)
 
 
 def test_buy_rejects_more_cash_than_available():
