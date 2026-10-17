@@ -43,6 +43,26 @@ def test_non_numeric_value(tmp_path):
         load_bars_csv(path)
 
 
+@pytest.mark.parametrize("raw", ["nan", "inf", "-inf"])
+def test_non_finite_value(tmp_path, raw):
+    path = _write(
+        tmp_path,
+        "timestamp,open,high,low,close,volume\n"
+        f"2024-01-01T00:00:00,1,2,1,1.5,{raw}\n",
+    )
+    with pytest.raises(ValueError, match=rf"non-finite volume: {raw!r}"):
+        load_bars_csv(path)
+
+
+def test_invalid_timestamp(tmp_path):
+    path = _write(
+        tmp_path,
+        "timestamp,open,high,low,close,volume\nnot-a-time,1,2,1,1.5,1\n",
+    )
+    with pytest.raises(ValueError, match="invalid timestamp: 'not-a-time'"):
+        load_bars_csv(path)
+
+
 def test_duplicate_timestamps(tmp_path):
     path = _write(
         tmp_path,

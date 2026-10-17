@@ -1,4 +1,5 @@
 import csv
+import math
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -28,7 +29,7 @@ def load_bars_csv(path) -> list[Bar]:
         bars: list[Bar] = []
         seen: set[datetime] = set()
         for row in reader:
-            timestamp = datetime.fromisoformat(row["timestamp"])
+            timestamp = _parse_timestamp(row["timestamp"])
             values = {name: _parse_float(name, row[name]) for name in _NUMERIC}
             if timestamp in seen:
                 raise ValueError(f"duplicate timestamp: {row['timestamp']}")
@@ -46,8 +47,18 @@ def load_bars_csv(path) -> list[Bar]:
     return bars
 
 
+def _parse_timestamp(raw: str) -> datetime:
+    try:
+        return datetime.fromisoformat(raw)
+    except (TypeError, ValueError):
+        raise ValueError(f"invalid timestamp: {raw!r}") from None
+
+
 def _parse_float(name: str, raw: str) -> float:
     try:
-        return float(raw)
+        value = float(raw)
     except (TypeError, ValueError):
         raise ValueError(f"non-numeric {name}: {raw!r}") from None
+    if not math.isfinite(value):
+        raise ValueError(f"non-finite {name}: {raw!r}")
+    return value
