@@ -127,6 +127,20 @@ def test_baselines_use_the_test_rows():
     assert result.majority_accuracy == pytest.approx(0.0)
 
 
+def test_single_class_train_predicts_that_class():
+    X = np.arange(10, dtype=float).reshape(10, 1)
+    y = np.array([1, 1, 1, 1, 1, 1, 1, 1, 0, 0])
+    result = walk_forward(X, y, min_train=5, step=3, random_state=0)
+
+    assert len(result.folds) == 2
+    first, second = result.folds
+    assert first.pipeline is None
+    assert second.pipeline is None
+    assert first.accuracy == pytest.approx(1.0)
+    assert second.accuracy == pytest.approx(0.0)
+    assert result.accuracy == pytest.approx(3 / 5)
+
+
 def test_scaler_mean_matches_train_slice_only():
     X = np.random.default_rng(0).normal(size=(80, 3))
     X[40:] += 10

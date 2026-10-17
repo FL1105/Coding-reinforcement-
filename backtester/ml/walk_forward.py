@@ -14,7 +14,7 @@ class FoldResult:
     accuracy: float
     majority_accuracy: float
     always_up_accuracy: float
-    pipeline: Pipeline
+    pipeline: Pipeline | None
 
 
 @dataclass(frozen=True)
@@ -51,12 +51,18 @@ def walk_forward(
     train_end = min_train
     while train_end < len(labels):
         test_end = min(train_end + step, len(labels))
-        pipeline = _pipeline(random_state)
-        pipeline.fit(features[:train_end], labels[:train_end])
+        y_train = labels[:train_end]
         y_test = labels[train_end:test_end]
-        pred = pipeline.predict(features[train_end:test_end])
         n_test = test_end - train_end
-        majority_pred = np.full(n_test, _majority(labels[:train_end]))
+        seen = np.unique(y_train)
+        if seen.size == 1:
+            pipeline = None
+            pred = np.full(n_test, int(seen[0]))
+        else:
+            pipeline = _pipeline(random_state)
+            pipeline.fit(features[:train_end], y_train)
+            pred = pipeline.predict(features[train_end:test_end])
+        majority_pred = np.full(n_test, _majority(y_train))
         up_pred = np.ones(n_test, dtype=int)
         fold_correct = int(np.sum(pred == y_test))
         fold_majority = int(np.sum(majority_pred == y_test))
