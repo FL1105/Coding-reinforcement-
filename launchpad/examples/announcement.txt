@@ -1,0 +1,12 @@
+Hi,
+
+{{ product_name }} is almost ready, and you're one of the first to hear about it.
+
+Know someone who'd love it? Share your personal link:
+
+{{ referral_link }}
+
+Everyone who joins through it counts toward your rewards. You've referred
+{{ referral_count }} so far.
+
+Thanks for being early.

@@ -14,7 +14,10 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["backtester*"]
+include = ["backtester*", "launchpad*"]
+
+[tool.setuptools.package-data]
+launchpad = ["web/*", "examples/*", "*.toml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

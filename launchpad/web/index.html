@@ -1,0 +1,26 @@
+<section class="hero">
+<p class="eyebrow">$product_name</p>
+<h1>$tagline</h1>
+$lede
+$notice
+<form method="post" action="/signup" class="signup">
+<input type="hidden" name="ref" value="$ref">
+<div class="trap" aria-hidden="true">
+<label>Leave this empty <input type="text" name="leave_blank" tabindex="-1" autocomplete="off"></label>
+</div>
+<label class="sr" for="email">Email address</label>
+<input id="email" type="email" name="email" placeholder="you@example.com" value="$email" required autocomplete="email" maxlength="254">
+<button type="submit">Get early access</button>
+</form>
+<p class="fineprint">We'll email once to confirm. No spam, unsubscribe any time.</p>
+</section>
+$benefits
+<section>
+<h2>How it works</h2>
+<ol class="steps">
+<li><strong>Join</strong> with your email and confirm it.</li>
+<li><strong>Share</strong> your personal link with friends.</li>
+<li><strong>Unlock</strong> rewards as friends join through you.</li>
+</ol>
+</section>
+$rewards

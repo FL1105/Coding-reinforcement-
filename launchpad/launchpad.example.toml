@@ -1,0 +1,40 @@
+# Copy to launchpad.toml and edit. SMTP credentials are NOT stored here:
+# set LAUNCHPAD_SMTP_HOST / _PORT / _USER / _PASSWORD (and _SSL=1 for port 465).
+
+product_name = "Acme Notes"
+tagline = "Notes that organise themselves."
+description = "Join the waitlist for early access to Acme Notes."
+benefits = [
+  "Early access before the public launch",
+  "Founding-member pricing, locked in for life",
+  "A say in what we build first",
+]
+
+# Public URL of this site (used in every link we email).
+base_url = "http://localhost:8000"
+
+from_name = "Acme Notes"
+from_email = "hello@example.com"
+
+# Required before you can send a campaign (CAN-SPAM and similar laws).
+postal_address = ""
+
+db_path = "launchpad.db"
+host = "127.0.0.1"
+port = 8000
+# Set true only when running behind a proxy you control (uses X-Forwarded-For).
+trust_proxy = false
+# Pause between emails in a campaign, in seconds.
+send_delay_seconds = 1.0
+
+[[rewards]]
+referrals = 1
+label = "Skip ahead in the queue"
+
+[[rewards]]
+referrals = 3
+label = "One month free"
+
+[[rewards]]
+referrals = 10
+label = "Lifetime founding-member discount"
