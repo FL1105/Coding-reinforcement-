@@ -49,6 +49,23 @@ python -m launchpad send --name launch-1 --subject "We're live" \
 python -m launchpad import contacts.csv --i-have-consent
 ```
 
+### Sending through a connector instead of SMTP
+
+`--outbox` writes each personalized email (recipient, subject, text/HTML body
+and unsubscribe link) to a JSON-lines file instead of sending it. Use it when
+the sending service is a Claude connector (Bird, Klaviyo, Mailchimp, ...)
+rather than SMTP: connect the service, then ask Claude to send the file's
+messages in approved batches. The file contains subscriber emails and
+unsubscribe tokens, so it is created owner-only and git-ignored.
+
+```bash
+python -m launchpad send --name launch-1 --subject "We're live" \
+    --text launchpad/examples/announcement.txt --outbox outbox-launch-1.jsonl --execute
+```
+
+The Gmail connector can only create drafts, not send, so it suits a handful
+of personal emails rather than a list.
+
 Template variables: `{{ product_name }}`, `{{ referral_link }}`,
 `{{ referral_count }}`, `{{ unsubscribe_link }}`, `{{ postal_address }}`.
 Every email also gets an unsubscribe link, your postal address and

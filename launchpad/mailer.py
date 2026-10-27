@@ -1,3 +1,5 @@
+import json
+import os
 import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr, formatdate, make_msgid
@@ -10,6 +12,31 @@ class ConsoleMailer:
         print(f"--- email to {message['To']} ---")
         print(f"Subject: {message['Subject']}")
         print(message.get_body(("plain",)).get_content())
+
+    def close(self) -> None:
+        pass
+
+
+class OutboxMailer:
+    """Appends each message to a JSON-lines file for a connector or tool to send."""
+
+    def __init__(self, path):
+        self._path = path
+
+    def send(self, message: EmailMessage) -> None:
+        html = message.get_body(("html",))
+        record = {
+            "to": message["To"],
+            "from": message["From"],
+            "subject": message["Subject"],
+            "text": message.get_body(("plain",)).get_content(),
+            "html": html.get_content() if html else None,
+            "list_unsubscribe": message["List-Unsubscribe"],
+        }
+        # The file holds subscriber emails and unsubscribe tokens: owner-only.
+        fd = os.open(self._path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+        with os.fdopen(fd, "a") as handle:
+            handle.write(json.dumps(record) + "\n")
 
     def close(self) -> None:
         pass

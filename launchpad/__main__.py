@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .campaigns import send_campaign
 from .config import load_config
-from .mailer import make_mailer
+from .mailer import OutboxMailer, make_mailer
 from .store import Store
 from .web import App, make_server
 
@@ -38,6 +38,10 @@ def _parser() -> argparse.ArgumentParser:
     send.add_argument("--text", required=True, help="plain-text body template file")
     send.add_argument("--html", help="optional HTML body template file")
     send.add_argument("--limit", type=int, help="send to at most this many people")
+    send.add_argument(
+        "--outbox",
+        help="write messages to this JSON-lines file instead of sending them",
+    )
     send.add_argument(
         "--execute", action="store_true", help="actually send (default is a dry run)"
     )
@@ -86,7 +90,7 @@ def _send(args) -> int:
     config, store = _load(args)
     text = Path(args.text).read_text()
     html = Path(args.html).read_text() if args.html else None
-    mailer = make_mailer(config)
+    mailer = OutboxMailer(args.outbox) if args.outbox else make_mailer(config)
     try:
         report = send_campaign(
             store,
@@ -105,7 +109,8 @@ def _send(args) -> int:
         print(f"Dry run: {report.recipients} recipient(s) would get this email.")
         print("Add --execute to send it.")
         return 0
-    print(f"Sent {report.sent}, failed {report.failed} of {report.recipients}.")
+    verb = "Queued" if args.outbox else "Sent"
+    print(f"{verb} {report.sent}, failed {report.failed} of {report.recipients}.")
     return 0 if report.failed == 0 else 1
 
 

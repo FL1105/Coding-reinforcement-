@@ -4,3 +4,4 @@ __pycache__/
 .venv/
 launchpad.db*
 launchpad.toml
+outbox*.jsonl
